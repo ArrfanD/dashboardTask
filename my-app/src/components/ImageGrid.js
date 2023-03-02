@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy } from "react";
 import images from "../Assets/imageArray";
 import Row from "react-bootstrap/esm/Row";
 import { motion } from "framer-motion";
