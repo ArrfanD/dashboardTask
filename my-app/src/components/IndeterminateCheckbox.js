@@ -2,7 +2,7 @@ import React from "react";
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { data } from "../data";
+import { data } from "../Assets/data";
 import { useState } from "react";
 import Row from "react-bootstrap/esm/Row";
 import arrowRight from "../Assets/icons/arrow-right-line.svg";

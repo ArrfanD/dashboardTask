@@ -22,7 +22,7 @@ const Dashboard = () => {
                         transition: { duration: 0.2 }
                     }} className=" my-4 text-center text-white h5 fs-5 font-weight-bold" onClick={() => navigate('checktree')}>CHECKBOX SELECTOR</motion.p>
                 </Col>
-                <Col className="col-md-9 h-100 col-sm-12 col-12 col-lg-10">
+                <Col className="col-md-9 d-flex flex-column align-items-center h-100 col-sm-12 col-12 col-lg-10">
                     <p className="my-5 h-100 text-muted display-4 text-center">
                         Welcome to the Dashboard Section
                     </p>
