@@ -19,6 +19,7 @@ export default function IndeterminateCheckbox() {
   // "zoneCityObj" is the record of all the area checkboxes that are checked & unchecked
   function setTheMainState(newZoneAndCity) {
     let baseArr = [...zoneCityObj];
+    // checking if the newZoneAndCity (Checked Data) is already present in zoneCityObj.
     if (
       zoneCityObj.filter(
         (item) =>
@@ -27,6 +28,7 @@ export default function IndeterminateCheckbox() {
           item.areaName === newZoneAndCity[0].areaName
       ).length
     ) {
+      // basically, if newZoneAndCity (Checked Data) is already present, remove it from baseArr. (since its unchecked)
       let filtered = baseArr.filter((item) => {
         return (
           item.city !== newZoneAndCity[0].city ||
@@ -36,7 +38,9 @@ export default function IndeterminateCheckbox() {
       });
       setZoneCityObj(filtered);
     } else {
+      // at this stage, newZoneAndCity (Checked Data) is not present, hence add it to baseArr.
       baseArr.push(...newZoneAndCity);
+      // update the "zoneCityObj" with the newly checked data.
       setZoneCityObj(baseArr);
     }
   }
@@ -67,7 +71,6 @@ export default function IndeterminateCheckbox() {
       newZoneIds.splice(isZoneIndexAlreadyPresent, 1);
       newClickedAreas.splice(isAreaAlreadyPresent, 1);
     }
-
     setClickedId(newClickedIds);
     setZoneIndex(newZoneIds);
     setTheMainState(newZoneAndCity);
@@ -88,20 +91,31 @@ export default function IndeterminateCheckbox() {
           cityId,
           cityName
         ) => {
+          // below code fetches the entire data in the form that matches the data present in "zoneCityObj" state.
           let innerData = item.advertisers.map((data) => {
             return { city: data.city_id, areaName: data.area, zone: item.id };
           });
 
+          // below code will compare innerData and zoneCityObj and accumulate those in a since variable "checkedObjects"
           let checkedObjects = innerData.reduce((acc, y) => {
+            // first filter out objects of zoneCityObj which match with innerData, 
+            // so only the concerned objects are present in matchingObjects below
             let matchingObjects = zoneCityObj.filter(
               (m) => y.city === m.city && y.zone === m.zone
             );
+
+            //now see if there are any objects in zoneCityObj that matched with innerData,
+            // basically see if any is checked on the UI.
             if (matchingObjects.length > 0) {
+              // since there is some data that is matching as it was selected, push it to accumulator (acc)
               acc.push(matchingObjects);
             }
+            // else just return acc
             return acc;
           }, []);
 
+          // this is just to find out the number of areas that are present in any city. 
+          // The number of areas will decide after comparing whether the city is checked or indeterminate. 
           let sortByCity = checkedObjects
             .map((zone) =>
               zone.filter((zoneArr) => {
@@ -116,8 +130,10 @@ export default function IndeterminateCheckbox() {
           let targetCity = sortByCity.map((data) =>
             data.reduce((acc, item) => (acc = item.city), 0)
           )[0];
-          // console.log(`sortByCity array here for ${cityName}`, cityAreaArr?.length)
 
+          // final stage. If "sortByCity" length (no of areas) matches that of "cityAreaArr" taken from the city iteration in the map,
+          // whose areas were checked, we conclude that the respective city checkbox is in checked state.
+          // If they don't match, its indeterminate.  
           if (
             sortByCity.length > 0 &&
             sortByCity[0]?.length === cityAreaArr?.length
