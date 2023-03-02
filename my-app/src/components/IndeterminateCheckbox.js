@@ -9,11 +9,14 @@ import arrowRight from "../Assets/icons/arrow-right-line.svg";
 import { motion } from 'framer-motion'
 
 export default function IndeterminateCheckbox() {
+  // State for all the functionality defining data 
   const [clickedId, setClickedId] = useState([]);
   const [zoneCityObj, setZoneCityObj] = useState([]);
   const [zoneIndex, setZoneIndex] = useState([]);
   const [clickedArea, setClickedArea] = useState([]);
 
+  // This function is called inside the handleWork function to manipulate the "zoneCityObj" state.
+  // "zoneCityObj" is the record of all the area checkboxes that are checked & unchecked
   function setTheMainState(newZoneAndCity) {
     let baseArr = [...zoneCityObj];
     if (
@@ -38,6 +41,8 @@ export default function IndeterminateCheckbox() {
     }
   }
 
+  // The below handleWork function simply pulls all the respective checked/unchecked area data &
+  // calls the setTheMainState function and passes the data into it to set the "zoneCityObj" state
   function handleWork(id, zoneId, area) {
     setZoneIndex(zoneId);
     const isIdAlreadyPresent = clickedId.indexOf(id);
@@ -69,10 +74,13 @@ export default function IndeterminateCheckbox() {
   }
 
   return (
-
     <Row  className="justify-content-evenly w-100 container-fluid">
       {data.map((item) => {
         const index = item.id;
+
+        // The "indeterminateOrChecked" function below is the brain of the concept. This function outputs an object with the exact data 
+        // relating to every city checkbox alongith the information of its "indeterminate" or "checked" state.
+        // It also outputs the exact pointers (zone, cityLabel) that relate to the checkbox that should show as checked, unchecked or indeterminate.
         let indeterminateOrChecked = (
           item,
           zoneCityObj,
@@ -148,6 +156,8 @@ export default function IndeterminateCheckbox() {
                       label={city.city.name}
                       control={
                         <Checkbox
+                          // data returned from the "indeterminateOrChecked" function is used to give Boolean depending
+                          // upon the outcome of the conditions passed.
                           checked={
                             cityLabel === city_id &&
                             message === "checked" &&
