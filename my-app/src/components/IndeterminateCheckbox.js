@@ -147,6 +147,7 @@ export default function IndeterminateCheckbox() {
   };
 
   let handleCityClick = (cityObj,zoneIdFromBtn) => {
+    console.log('cite btn pressed')
     let baseArr = [...clickedCheckbox];
     console.log('check city presence zones', zoneIdFromBtn,cityObj.city_id )
     console.log('city data sent from city checkbox',cityObj)
@@ -155,22 +156,22 @@ export default function IndeterminateCheckbox() {
     }))
 
     console.log('city data sent from city checkbox processed',baseArr)
-    let checkCityPresence = baseArr.map(item => item.filter(data => data.zone === zoneIdFromBtn && data.city === cityObj.city_id))
+    let checkCityPresence = baseArr?.map(item => item.filter(data => data.zone === zoneIdFromBtn && data.city === cityObj.city_id))
     let baseAmr = []
     let removedCityPresence = baseArr.map(item => item.filter(data => data.city !== cityObj.city_id || data.zone !== zoneIdFromBtn))
-    const presentCityQty = checkCityPresence?.filter(item => item.length > 0)[0].length
+    const presentCityQty = checkCityPresence?.filter(item => item.length > 0)[0]?.length
     // let filtered = baseArr?.filter(item => item)
     console.log('check city already present in the checekded state', presentCityQty)
     console.log('check city presence',baseArr, removedCityPresence, cityObj )
+    console.log('citypres', checkCityPresence)
     if (presentCityQty === cityObj?.area?.length){
       console.log('cite is already checked')
       // baseArr.push(...baseAmr)
       setClickedCheckbox(removedCityPresence)
 
-    } else if ( presentCityQty !== cityObj?.area?.length && presentCityQty > 0) {
-      console.log('cite is indeterminate')
-    } else if (presentCityQty === 0 ) {
+    }  else if (!presentCityQty) {
       console.log('cite is unchecked')
+      
     }
   }
 
@@ -268,9 +269,10 @@ console.log(' observe here ', clickedCheckbox)
                             checked={setCityState(city, item.id).outcome === 'checked' && setCityState(city, item.id).zone === item.id && setCityState(city, item.id).city === city.city_id}
                             indeterminate={setCityState(city, item.id).outcome === 'indeterminate' && setCityState(city, item.id).zone === item.id && setCityState(city, item.id).city === city.city_id}
                             name={city.city.name}
+                        onChange={()=>handleCityClick(city,item.id)}
+
                           />
                         }
-                        onChange={()=>handleCityClick(city,item.id)}
                       />
                       
                       {city.area.map((areas) => {
