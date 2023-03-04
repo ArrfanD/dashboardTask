@@ -146,13 +146,32 @@ export default function IndeterminateCheckbox() {
     setSelectedCheckboxState(baseArr, processed);
   };
 
-
   let handleCityClick = (cityObj,zoneIdFromBtn) => {
     let baseArr = [...clickedCheckbox];
-
+    console.log('check city presence zones', zoneIdFromBtn,cityObj.city_id )
     console.log('city data sent from city checkbox',cityObj)
-    console.log('city data sent from',clickedCheckbox)
+    console.log('city data sent from city checkbox processed',cityObj.area.map(item => {
+      return { zone: zoneIdFromBtn, city: cityObj.city_id, areaName: item.area}
+    }))
+
+    console.log('city data sent from city checkbox processed',baseArr)
+    let checkCityPresence = baseArr.map(item => item.filter(data => data.zone === zoneIdFromBtn && data.city === cityObj.city_id))
+    let baseAmr = []
+    let removedCityPresence = baseArr.map(item => item.filter(data => data.city !== cityObj.city_id || data.zone !== zoneIdFromBtn))
+    const presentCityQty = checkCityPresence?.filter(item => item.length > 0)[0].length
     // let filtered = baseArr?.filter(item => item)
+    console.log('check city already present in the checekded state', presentCityQty)
+    console.log('check city presence',baseArr, removedCityPresence, cityObj )
+    if (presentCityQty === cityObj?.area?.length){
+      console.log('cite is already checked')
+      // baseArr.push(...baseAmr)
+      setClickedCheckbox(removedCityPresence)
+
+    } else if ( presentCityQty !== cityObj?.area?.length && presentCityQty > 0) {
+      console.log('cite is indeterminate')
+    } else if (presentCityQty === 0 ) {
+      console.log('cite is unchecked')
+    }
   }
 
 console.log(' observe here ', clickedCheckbox)
@@ -169,7 +188,7 @@ console.log(' observe here ', clickedCheckbox)
           const checkedZoneCitiesQty = Array.from(checkedZoneCities).length
           const actualCityQtyForZone = itemArr?.advertisers?.map(item => item.city_id).length
           const checkedZoneId = itemId
-          console.log('observe here sds ',checkedZoneCitiesQty )
+          // console.log('observe here sds ',checkedZoneCitiesQty )
           if (actualCityQtyForZone === checkedZoneCitiesQty){
             console.log(`checked zone no `,checkedZoneId )
             return {outcome: 'checked', zone: checkedZoneId}
@@ -259,7 +278,7 @@ console.log(' observe here ', clickedCheckbox)
                           console.log('areas ', areasObj,areaItemId, areaCityId)
                           let baseArr = [...clickedCheckbox]
                           
-                          let extractSelectedCity = baseArr?.map(item => item?.filter(data => data.zone === areaItemId)).filter(item => item.length > 0)[0]?.filter(data => data.areaName === clickArea)[0].areaName
+                          let extractSelectedCity = baseArr?.map(item => item?.filter(data => data.zone === areaItemId)).filter(item => item.length > 0)[0]?.filter(data => data?.areaName === clickArea)[0]?.areaName
                           // console.log('basearr of ', baseArr?.map(item => item.filter(data => data.zone === areaItemId)).filter(item => item.length > 0)[0])
                           console.log('basearr of area', extractSelectedCity)
                           return {zone: areaItemId, city: areaCityId, areaName: extractSelectedCity}
@@ -295,7 +314,6 @@ console.log(' observe here ', clickedCheckbox)
                                       name={city.city.name}
                                       index={index}
                                       checked={setAreaState(item.id, city.city_id, areas, areas.area).zone === item.id && setAreaState(item.id, city.city_id, areas, areas.area).city === city.city_id && setAreaState(item.id, city.city_id, areas, areas.area).areaName === areas.area}
-                                      indeterminate={false}
                                     />
                                   }
                                 />
