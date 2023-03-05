@@ -16,6 +16,58 @@ export default function IndeterminateCheckbox() {
   const [clickedArea, setClickedArea] = useState([]);
   const [clickedCheckbox, setClickedCheckbox] = useState([]);
 
+  // function combineArrays(array) {
+  //   // create an empty object to store the unique objects
+  //   const uniqueObjects = {};
+  
+  //   // iterate through the outermost array
+  //   for (let i = 0; i < array.length; i++) {
+  //     // iterate through the inner arrays
+  //     for (let j = 0; j < array[i].length; j++) {
+  //       // iterate through the objects in the inner array
+  //       for (let k = 0; k < array[i][j].length; k++) {
+  //         // check if an object with the same zone property already exists
+  //         const key = array[i][j][k].zone;
+  //         if (!uniqueObjects[key]) {
+  //           // if not, add the object to the uniqueObjects object
+  //           uniqueObjects[key] = array[i][j][k];
+  //         } else {
+  //           // if yes, merge the existing object with the current object
+  //           const existingObject = uniqueObjects[key];
+  //           uniqueObjects[key] = Object.assign({}, existingObject, array[i][j][k]);
+  //         }
+  //       }
+  //     }
+  //   }
+  
+  //   // convert the uniqueObjects object to an array
+  //   const newArray = Object.keys(uniqueObjects).map(key => uniqueObjects[key]);
+  
+  //   return newArray;
+  // }
+
+  function getUniqueObjectsByAreaName(arr) {
+    const uniqueObjects = {};
+    arr.forEach(obj => uniqueObjects[obj.areaName] = obj);
+    return Object.values(uniqueObjects);
+  }
+  
+  
+  function groupByZone(arr) {
+    const zones = {};
+    arr.forEach((subArr) => {
+      subArr.forEach((obj) => {
+        if (!zones[obj.zone]) {
+          zones[obj.zone] = [obj];
+        } else {
+          zones[obj.zone].push(obj);
+        }
+      });
+    });
+    return Object.values(zones);
+  }
+  
+
   // const idAreas = data.map((item) => {
   //   const id = item.id;
   //   const areas = item.advertisers.flatMap((advertiser) => {
@@ -208,10 +260,17 @@ export default function IndeterminateCheckbox() {
           let removeTargetZone = baseArr.map(item => item.filter(data => data.zone !== zoneIdFromBtn))
           let separateTargetZone = baseArr.map(item => item.filter(data => data.zone === zoneIdFromBtn))?.filter(item => item.length> 0)
           let addIntoTargetZone = dataToBeSent.map(item => separateTargetZone.push(item))
-          baseArr.push(zoneArr)
+          // // let resolvedZoneArr = [...zoneArr]
+          // let solutionZoneArr = getUniqueObjectsByAreaName(zoneArr)
+          // console.log('done area log state resolved areaNames', solutionZoneArr)
+          // baseArr.push(solutionZoneArr)
           
-          // console.log('base arr is not empty and its pushed now target removed',baseArr)
-          setClickedCheckbox(baseArr)
+          // // console.log('base arr is not empty and its pushed now target removed',baseArr)
+          // setClickedCheckbox(baseArr)
+          baseArr.push(zoneArr)
+          let solutionZoneArr = getUniqueObjectsByAreaName(baseArr[0])
+          console.log('done area log state basearr',[solutionZoneArr])
+          setClickedCheckbox([solutionZoneArr])
         } else {
           console.log('base arr is not empty and its pushed now idnotpresent, put new array')
           baseArr.push(dataToBeSent)
@@ -224,7 +283,7 @@ export default function IndeterminateCheckbox() {
     } 
   }
 
-console.log('area log state', clickedCheckbox)
+console.log('done area log state', clickedCheckbox)
 
   return (
     <Row className="justify-content-evenly w-100 container-fluid">
@@ -233,7 +292,7 @@ console.log('area log state', clickedCheckbox)
 
         let zoneState = (itemId,itemArr) => {
           let baseArr = [...clickedCheckbox]
-          let sortForZone = baseArr.map(item => item?.filter(data => data.zone === itemArr.id))?.filter(item => item?.length > 0)
+          let sortForZone = baseArr?.map(item => item?.filter(data => data.zone === itemArr.id))?.filter(item => item?.length > 0)
           let checkedZoneCities = new Set(sortForZone[0]?.map(item => item.city))
           const checkedZoneCitiesQty = Array.from(checkedZoneCities).length
           const actualCityQtyForZone = itemArr?.advertisers?.map(item => item.city_id).length
@@ -328,7 +387,7 @@ console.log('area log state', clickedCheckbox)
                         const baseArray = [...clickedCheckbox];
                          let handleAreaClick = (zoneIdNo, cityIdNo, area) => {
                           let dataToSend = {zone: zoneIdNo, city: cityIdNo, areaName: area.area}
-                          console.log('area log', dataToSend)
+                          console.log('done log', dataToSend)
                           let presentNos = []
                           let checkPresence = baseArray.map(item => item.map(data => {
                             if(data.zone === zoneIdNo && data.city === cityIdNo && data.areaName === area.area){
@@ -337,14 +396,18 @@ console.log('area log state', clickedCheckbox)
                               return
                             }
                           }))
-                          console.log('area log check presence', presentNos.length)
+                          console.log('done log check presence', presentNos.length)
                           if (presentNos.length > 0){
-                            let areaRemoved = baseArray.map(item => item.filter(data => data.zone !== zoneIdNo || data.city !== cityIdNo || data.areaName !== area.area))
+                            let areaRemoved = baseArray.map(item => item.filter(data => data.zone !== zoneIdNo || data.city !== cityIdNo || data.areaName !== area.area))?.filter(x=> x.length > 0)
                             console.log('area log check presence area is already present',areaRemoved)
                             setClickedCheckbox(areaRemoved)
-                          } else {
-                            console.log('area log check presence area is not present')
-          
+                          } else if (presentNos.length === 0) {
+                            console.log('done not a single area is present')
+                            baseArray.push([dataToSend])
+                            let finalArray = [...baseArray]
+                            let resolvedArray = groupByZone(finalArray)
+                            console.log('done resolved array', resolvedArray)
+                            setClickedCheckbox(resolvedArray)
                           }
 
                          }
