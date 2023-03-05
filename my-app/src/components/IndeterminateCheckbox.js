@@ -46,11 +46,33 @@ export default function IndeterminateCheckbox() {
   //   return newArray;
   // }
 
-  function getUniqueObjectsByAreaName(arr) {
-    const uniqueObjects = {};
-    arr.forEach(obj => uniqueObjects[obj.areaName] = obj);
-    return Object.values(uniqueObjects);
+  // function getUniqueObjectsByAreaName(arr) {
+  //   const uniqueObjects = {};
+  //   arr.forEach(obj => uniqueObjects[obj.areaName] = obj);
+  //   return Object.values(uniqueObjects);
+  // }
+
+  function removeDuplicateObjects(array) {
+    return array.map((childArray) => {
+      const uniqueObjects = [];
+  
+      childArray.forEach((object) => {
+        const existingObjectIndex = uniqueObjects.findIndex(
+          (uniqueObject) =>
+            uniqueObject.zone === object.zone &&
+            uniqueObject.city === object.city &&
+            uniqueObject.areaName === object.areaName
+        );
+  
+        if (existingObjectIndex === -1) {
+          uniqueObjects.push(object);
+        }
+      });
+  
+      return uniqueObjects;
+    });
   }
+  
   
   
   function groupByZone(arr) {
@@ -268,9 +290,9 @@ export default function IndeterminateCheckbox() {
           // // console.log('base arr is not empty and its pushed now target removed',baseArr)
           // setClickedCheckbox(baseArr)
           baseArr.push(zoneArr)
-          let solutionZoneArr = getUniqueObjectsByAreaName(baseArr[0])
+          let solutionZoneArr = removeDuplicateObjects(baseArr)
           console.log('done area log state basearr',[solutionZoneArr])
-          setClickedCheckbox([solutionZoneArr])
+          setClickedCheckbox(solutionZoneArr)
         } else {
           console.log('base arr is not empty and its pushed now idnotpresent, put new array')
           baseArr.push(dataToBeSent)
