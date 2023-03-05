@@ -147,18 +147,20 @@ export default function IndeterminateCheckbox() {
   };
 
   let handleCityClick = (cityObj,zoneIdFromBtn) => {
-    console.log('cite btn pressed')
+    // console.log('cite btn pressed')
     let baseArr = [...clickedCheckbox];
-    console.log('check city presence zones', zoneIdFromBtn,cityObj.city_id )
-    console.log('city data sent from city checkbox',cityObj)
+    // console.log('check city presence zones', zoneIdFromBtn,cityObj.city_id )
+    // console.log('city data sent from city checkbox',baseArr)
     console.log('city data sent from city checkbox processed',cityObj.area.map(item => {
       return { zone: zoneIdFromBtn, city: cityObj.city_id, areaName: item.area}
     }))
-
-    console.log('city data sent from city checkbox processed',baseArr)
-    let checkCityPresence = baseArr?.map(item => item.filter(data => data.zone === zoneIdFromBtn && data.city === cityObj.city_id))
+    let dataToBeSent = cityObj.area.map(item => {
+      return { zone: zoneIdFromBtn, city: cityObj.city_id, areaName: item.area }
+    });
+    // console.log('city data sent from city checkbox processed',baseArr)
+    let checkCityPresence = baseArr?.map(item => item?.filter(data => data.zone === zoneIdFromBtn && data.city === cityObj.city_id))
     let baseAmr = []
-    let removedCityPresence = baseArr.map(item => item.filter(data => data.city !== cityObj.city_id || data.zone !== zoneIdFromBtn))
+    let removedCityPresence = baseArr?.map(item => item?.filter(data => data.city !== cityObj.city_id || data.zone !== zoneIdFromBtn))?.filter(data => data.length > 0)
     const presentCityQty = checkCityPresence?.filter(item => item.length > 0)[0]?.length
     // let filtered = baseArr?.filter(item => item)
     console.log('check city already present in the checekded state', presentCityQty)
@@ -169,13 +171,60 @@ export default function IndeterminateCheckbox() {
       // baseArr.push(...baseAmr)
       setClickedCheckbox(removedCityPresence)
 
-    }  else if (!presentCityQty) {
+    }  else  {
       console.log('cite is unchecked')
-      
-    }
+      if(!baseArr.length) {
+        console.log('base arr is empty')
+        baseArr.push(dataToBeSent)
+        setClickedCheckbox(baseArr)
+      } else {
+        console.log('base arr is not empty')
+        let ids = []
+        let isZonePresent = baseArr.map(item => item.map(data => {
+          if (data.zone === zoneIdFromBtn){
+            ids.push(data.zone)
+          } else {
+            return false
+          }
+        }))
+        console.log('base arr is not empty and its pushed now id', ids)
+
+        if (ids.length !== 0 || ids.length > 2){
+          console.log('base arr is not empty and its pushed now amend')
+          let zoneArr = [...dataToBeSent]
+          let insertNewBaseArrData = baseArr.map(item => item.map((itm, index) => {
+            if (itm.zone === zoneIdFromBtn && index === 0){
+              console.log('base arr itm', itm)
+              console.log('base arr itm datatobesent', zoneArr)
+              zoneArr.push(itm)
+              item.push(...dataToBeSent)
+              // let itmArr = [itm]
+              // itmArr.push(...dataToBeSent)
+              return item
+            } else {
+              return null
+            }
+          }))
+          let removeTargetZone = baseArr.map(item => item.filter(data => data.zone !== zoneIdFromBtn))
+          let separateTargetZone = baseArr.map(item => item.filter(data => data.zone === zoneIdFromBtn))?.filter(item => item.length> 0)
+          let addIntoTargetZone = dataToBeSent.map(item => separateTargetZone.push(item))
+          baseArr.push(zoneArr)
+          
+          // console.log('base arr is not empty and its pushed now target removed',baseArr)
+          setClickedCheckbox(baseArr)
+        } else {
+          console.log('base arr is not empty and its pushed now idnotpresent, put new array')
+          baseArr.push(dataToBeSent)
+          setClickedCheckbox(baseArr)
+        }
+
+      }
+      // baseArr.forEach
+      // setClickedCheckbox(baseArr)
+    } 
   }
 
-console.log(' observe here ', clickedCheckbox)
+console.log('base arr is not empty and its pushed now state', clickedCheckbox)
 
   return (
     <Row className="justify-content-evenly w-100 container-fluid">
@@ -184,7 +233,7 @@ console.log(' observe here ', clickedCheckbox)
 
         let zoneState = (itemId,itemArr) => {
           let baseArr = [...clickedCheckbox]
-          let sortForZone = baseArr.map(item => item.filter(data => data.zone === itemArr.id)).filter(item => item.length > 0)
+          let sortForZone = baseArr.map(item => item?.filter(data => data.zone === itemArr.id))?.filter(item => item?.length > 0)
           let checkedZoneCities = new Set(sortForZone[0]?.map(item => item.city))
           const checkedZoneCitiesQty = Array.from(checkedZoneCities).length
           const actualCityQtyForZone = itemArr?.advertisers?.map(item => item.city_id).length
@@ -239,7 +288,7 @@ console.log(' observe here ', clickedCheckbox)
                     console.log('clicked city ',cityArr.area.length,zoneIdForCity)
                     let areaQtyForCurrentCity = cityArr.area.length;
                     let baseArr = [...clickedCheckbox]
-                    let sortClickedCityByZone = baseArr.map(item => item.filter(data => data.zone === zoneIdForCity)).filter(item => item.length > 0)
+                    let sortClickedCityByZone = baseArr?.map(item => item?.filter(data => data.zone === zoneIdForCity))?.filter(item => item?.length > 0)
                     let sortClickedCityByCityId = sortClickedCityByZone[0]?.filter(item => item.city === cityArr?.city_id)
                     let confirmedCityIdSet = new Set(sortClickedCityByCityId?.map(item => item.city))
                     const confirmedCityId = Array.from(confirmedCityIdSet)
@@ -280,9 +329,9 @@ console.log(' observe here ', clickedCheckbox)
                           console.log('areas ', areasObj,areaItemId, areaCityId)
                           let baseArr = [...clickedCheckbox]
                           
-                          let extractSelectedCity = baseArr?.map(item => item?.filter(data => data.zone === areaItemId)).filter(item => item.length > 0)[0]?.filter(data => data?.areaName === clickArea)[0]?.areaName
+                          let extractSelectedCity = baseArr?.map(item => item?.filter(data => data.zone === areaItemId))?.filter(item => item?.length > 0)[0]?.filter(data => data?.areaName === clickArea)[0]?.areaName
                           // console.log('basearr of ', baseArr?.map(item => item.filter(data => data.zone === areaItemId)).filter(item => item.length > 0)[0])
-                          console.log('basearr of area', extractSelectedCity)
+                          // console.log('basearr of area', extractSelectedCity)
                           return {zone: areaItemId, city: areaCityId, areaName: extractSelectedCity}
                         }
                         return (
