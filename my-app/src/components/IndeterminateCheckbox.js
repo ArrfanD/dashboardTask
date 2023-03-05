@@ -16,41 +16,6 @@ export default function IndeterminateCheckbox() {
   const [clickedArea, setClickedArea] = useState([]);
   const [clickedCheckbox, setClickedCheckbox] = useState([]);
 
-  // function combineArrays(array) {
-  //   // create an empty object to store the unique objects
-  //   const uniqueObjects = {};
-  
-  //   // iterate through the outermost array
-  //   for (let i = 0; i < array.length; i++) {
-  //     // iterate through the inner arrays
-  //     for (let j = 0; j < array[i].length; j++) {
-  //       // iterate through the objects in the inner array
-  //       for (let k = 0; k < array[i][j].length; k++) {
-  //         // check if an object with the same zone property already exists
-  //         const key = array[i][j][k].zone;
-  //         if (!uniqueObjects[key]) {
-  //           // if not, add the object to the uniqueObjects object
-  //           uniqueObjects[key] = array[i][j][k];
-  //         } else {
-  //           // if yes, merge the existing object with the current object
-  //           const existingObject = uniqueObjects[key];
-  //           uniqueObjects[key] = Object.assign({}, existingObject, array[i][j][k]);
-  //         }
-  //       }
-  //     }
-  //   }
-  
-  //   // convert the uniqueObjects object to an array
-  //   const newArray = Object.keys(uniqueObjects).map(key => uniqueObjects[key]);
-  
-  //   return newArray;
-  // }
-
-  // function getUniqueObjectsByAreaName(arr) {
-  //   const uniqueObjects = {};
-  //   arr.forEach(obj => uniqueObjects[obj.areaName] = obj);
-  //   return Object.values(uniqueObjects);
-  // }
 
   function removeDuplicateObjects(array) {
     return array.map((childArray) => {
@@ -90,43 +55,6 @@ export default function IndeterminateCheckbox() {
   }
   
 
-  // const idAreas = data.map((item) => {
-  //   const id = item.id;
-  //   const areas = item.advertisers.flatMap((advertiser) => {
-  //     const city_id = advertiser.city_id;
-  //     return advertiser.area.map((area) => [id, city_id, area.area]);
-  //   });
-  //   return areas;
-  // });
-
-  // function mergeValues(arr) {
-  //   const merged = arr.reduce(
-  //     (acc, val) => {
-  //       const index = acc[0].indexOf(val[0]);
-  //       if (index === -1) {
-  //         acc[0].push(val[0]);
-  //         acc[1].push([val[1]]);
-  //         acc[2].push([val[2]]);
-  //       } else {
-  //         acc[1][index].push(val[1]);
-  //         acc[2][index].push(val[2]);
-  //       }
-  //       return acc;
-  //     },
-  //     [[], [], []]
-  //   );
-
-  //   return merged.map((arr) => (arr.length === 1 ? arr[0] : arr));
-  // }
-
-  // console.log(
-  //   "hello ",
-  //   idAreas.map((item) => mergeValues(item))
-  // );
-  // console.log("hello zonecity", zoneCityObj);
-
-  // This function is called inside the handleWork function to manipulate the "zoneCityObj" state.
-  // "zoneCityObj" is the record of all the area checkboxes that are checked & unchecked
   function setTheMainState(newZoneAndCity) {
     let baseArr = [...zoneCityObj];
     // checking if the newZoneAndCity (Checked Data) is already present in zoneCityObj.
@@ -155,45 +83,13 @@ export default function IndeterminateCheckbox() {
     }
   }
 
-  // The below handleWork function simply pulls all the respective checked/unchecked area data &
-  // calls the setTheMainState function and passes the data into it to set the "zoneCityObj" state
-  // function handleWork(id, zoneId, area) {
-  //   setZoneIndex(zoneId);
-  //   const isIdAlreadyPresent = clickedId.indexOf(id);
-  //   const newClickedIds = [...clickedId];
-  //   const isZoneIndexAlreadyPresent = zoneIndex.indexOf(zoneId);
-  //   const newZoneIds = [...zoneIndex];
-  //   const isAreaAlreadyPresent = clickedArea.indexOf(area);
-  //   const newClickedAreas = [...clickedArea];
-  //   const newZoneAndCity = [];
 
-  //   if (
-  //     isIdAlreadyPresent === -1 ||
-  //     isZoneIndexAlreadyPresent === -1 ||
-  //     isAreaAlreadyPresent === -1
-  //   ) {
-  //     newClickedIds.push(id);
-  //     newZoneIds.push(zoneId);
-  //     newClickedAreas.push(area);
-  //     newZoneAndCity.push({ city: id, zone: zoneId, areaName: area });
-  //   } else {
-  //     newClickedIds.splice(isIdAlreadyPresent, 1);
-  //     newZoneIds.splice(isZoneIndexAlreadyPresent, 1);
-  //     newClickedAreas.splice(isAreaAlreadyPresent, 1);
-  //   }
-  //   setClickedId(newClickedIds);
-  //   setZoneIndex(newZoneIds);
-  //   setTheMainState(newZoneAndCity);
-  // }
 
   let setSelectedCheckboxState = (dataToBeSet, sentObj) => {
     let workArr = [...clickedCheckbox]
 
     let checkIsZonePresent = dataToBeSet?.map(arr => arr.filter(item => item.zone === sentObj[0].zone)).filter(item => item.length > 0)
     // console.log('check is zone present ',checkIsZonePresent.length)
-    // let spread = dataToBeSet[0].advertisers.map(item => item.area.map(data => {
-    //   return {zone : dataToBeSet[0].id, city: item.city_id, areaName: data.area}
-    // })).reduce((acc, arr) => acc.concat(arr), []);
 
     console.log('end result of the',dataToBeSet)
     console.log('end result of the required onject', checkIsZonePresent.length)
@@ -282,13 +178,7 @@ export default function IndeterminateCheckbox() {
           let removeTargetZone = baseArr.map(item => item.filter(data => data.zone !== zoneIdFromBtn))
           let separateTargetZone = baseArr.map(item => item.filter(data => data.zone === zoneIdFromBtn))?.filter(item => item.length> 0)
           let addIntoTargetZone = dataToBeSent.map(item => separateTargetZone.push(item))
-          // // let resolvedZoneArr = [...zoneArr]
-          // let solutionZoneArr = getUniqueObjectsByAreaName(zoneArr)
-          // console.log('done area log state resolved areaNames', solutionZoneArr)
-          // baseArr.push(solutionZoneArr)
-          
-          // // console.log('base arr is not empty and its pushed now target removed',baseArr)
-          // setClickedCheckbox(baseArr)
+
           baseArr.push(zoneArr)
           let solutionZoneArr = removeDuplicateObjects(baseArr)
           console.log('done area log state basearr',[solutionZoneArr])
@@ -298,10 +188,8 @@ export default function IndeterminateCheckbox() {
           baseArr.push(dataToBeSent)
           setClickedCheckbox(baseArr)
         }
-
       }
-      // baseArr.forEach
-      // setClickedCheckbox(baseArr)
+
     } 
   }
 
@@ -311,7 +199,6 @@ console.log('done area log state', clickedCheckbox)
     <Row className="justify-content-evenly w-100 container-fluid">
       {data.map((item) => {
         const index = item.id;
-
         let zoneState = (itemId,itemArr) => {
           let baseArr = [...clickedCheckbox]
           let sortForZone = baseArr?.map(item => item?.filter(data => data.zone === itemArr.id))?.filter(item => item?.length > 0)
@@ -357,14 +244,6 @@ console.log('done area log state', clickedCheckbox)
               <div className="col-lg-6 flex-col justify-content-evenly col-md-8  m-3">
                 {item.advertisers.map((city, indexCity) => {
                   let city_id = city.city_id;
-                  // let { zone, cityLabel, message } = indeterminateOrChecked(
-                  //   item,
-                  //   zoneCityObj,
-                  //   city.area,
-                  //   city.city_id,
-                  //   city.city.name
-                  // );
-
                   let setCityState = (cityArr, zoneIdForCity) => {
                     console.log('clicked city ',cityArr.area.length,zoneIdForCity)
                     let areaQtyForCurrentCity = cityArr.area.length;
@@ -439,8 +318,7 @@ console.log('done area log state', clickedCheckbox)
                           let baseArr = [...clickedCheckbox]
                           
                           let extractSelectedCity = baseArr?.map(item => item?.filter(data => data.zone === areaItemId))?.filter(item => item?.length > 0)[0]?.filter(data => data?.areaName === clickArea)[0]?.areaName
-                          // console.log('basearr of ', baseArr?.map(item => item.filter(data => data.zone === areaItemId)).filter(item => item.length > 0)[0])
-                          // console.log('basearr of area', extractSelectedCity)
+
                           return {zone: areaItemId, city: areaCityId, areaName: extractSelectedCity}
                         }
                         return (
@@ -464,13 +342,7 @@ console.log('done area log state', clickedCheckbox)
                                   label={areas.area}
                                   control={
                                     <Checkbox
-                                      // onChange={() =>
-                                      //   handleWork(
-                                      //     city.city_id,
-                                      //     item.id,
-                                      //     areas.area
-                                      //   )
-                                      // }
+
                                       onChange={()=> handleAreaClick(item.id, city.city_id, areas)}
                                       name={city.city.name}
                                       index={index}
