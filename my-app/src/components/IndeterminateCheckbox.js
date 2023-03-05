@@ -224,7 +224,7 @@ export default function IndeterminateCheckbox() {
     } 
   }
 
-console.log('base arr is not empty and its pushed now state', clickedCheckbox)
+console.log('area log state', clickedCheckbox)
 
   return (
     <Row className="justify-content-evenly w-100 container-fluid">
@@ -325,6 +325,30 @@ console.log('base arr is not empty and its pushed now state', clickedCheckbox)
                       />
                       
                       {city.area.map((areas) => {
+                        const baseArray = [...clickedCheckbox];
+                         let handleAreaClick = (zoneIdNo, cityIdNo, area) => {
+                          let dataToSend = {zone: zoneIdNo, city: cityIdNo, areaName: area.area}
+                          console.log('area log', dataToSend)
+                          let presentNos = []
+                          let checkPresence = baseArray.map(item => item.map(data => {
+                            if(data.zone === zoneIdNo && data.city === cityIdNo && data.areaName === area.area){
+                              presentNos.push(zoneIdNo)
+                            }else {
+                              return
+                            }
+                          }))
+                          console.log('area log check presence', presentNos.length)
+                          if (presentNos.length > 0){
+                            let areaRemoved = baseArray.map(item => item.filter(data => data.zone !== zoneIdNo || data.city !== cityIdNo || data.areaName !== area.area))
+                            console.log('area log check presence area is already present',areaRemoved)
+                            setClickedCheckbox(areaRemoved)
+                          } else {
+                            console.log('area log check presence area is not present')
+          
+                          }
+
+                         }
+
                         let setAreaState = (areaItemId, areaCityId, areasObj, clickArea) => {
                           console.log('areas ', areasObj,areaItemId, areaCityId)
                           let baseArr = [...clickedCheckbox]
@@ -362,6 +386,7 @@ console.log('base arr is not empty and its pushed now state', clickedCheckbox)
                                       //     areas.area
                                       //   )
                                       // }
+                                      onChange={()=> handleAreaClick(item.id, city.city_id, areas)}
                                       name={city.city.name}
                                       index={index}
                                       checked={setAreaState(item.id, city.city_id, areas, areas.area).zone === item.id && setAreaState(item.id, city.city_id, areas, areas.area).city === city.city_id && setAreaState(item.id, city.city_id, areas, areas.area).areaName === areas.area}
