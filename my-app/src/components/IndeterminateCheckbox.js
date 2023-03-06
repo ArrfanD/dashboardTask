@@ -221,8 +221,12 @@ console.log('city event checked ', cityEventChecked)
 
         return (
           <>
-          <div
-              className="flex-col justify-content-start bg-light mx-2 mb-5 card rounded-4 col-lg-3"
+          <motion.div
+                        whileHover={{
+                          scale: 0.95,
+                          transition: { duration: 0.2 },
+                        }}
+              className="flex-col justify-content-start bg-light mx-2 pt-2  pl-3 mb-5 card rounded-4 col-lg-3"
               
           >
                                   <FormControlLabel
@@ -239,14 +243,10 @@ console.log('city event checked ', cityEventChecked)
               }
             />
                       <motion.div
-              whileHover={{
-                scale: 0.95,
-                transition: { duration: 0.2 },
-              }}
+
               className="flex-col justify-content-start  mx-2 mb-5  col-lg-3"
             >
-              {/* <label className="col-lg-6 mt-2 col-md-6">{item.name}</label> */}
-              <div className="col-lg-6 flex-col justify-content-evenly col-md-8  m-3">
+              <div className="col-lg-6 flex-col justify-content-evenly col-md-8  m-1">
                 {item.advertisers.map((city, indexCity) => {
                   let city_id = city.city_id;
                   let setCityState = (cityArr, zoneIdForCity) => {
@@ -273,8 +273,25 @@ console.log('city event checked ', cityEventChecked)
                   }
 
                   return (
-                    <div className="col-lg-3">
-                      <FormControlLabel
+                    <motion.div className="col-lg-3"
+
+                    whileTap={{
+                      rotateZ: 16,
+                      transition: { duration: 0.2 },
+                    }}
+                    >
+                              
+
+                                                  <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                ml: 2,
+                              }}
+                            >
+                              <div className=" d-flex">
+                              <img src={arrowRight} alt="arrow" />
+                              <FormControlLabel
                         label={city.city.name}
                         control={
                           <Checkbox
@@ -288,6 +305,8 @@ console.log('city event checked ', cityEventChecked)
                           />
                         }
                       />
+                              </div>
+
                       
                       {city.area.map((areas) => {
                         const baseArray = [...clickedCheckbox];
@@ -327,27 +346,31 @@ console.log('city event checked ', cityEventChecked)
                           return {zone: areaItemId, city: areaCityId, areaName: extractSelectedCity}
                         }
                         return (
-                          <div className="mx-2">
+                          <div className="mx-0">
                             <Box
                               sx={{
                                 display: "flex",
                                 flexDirection: "row",
-                                ml: 2,
+                                ml: 4,
                               }}
                             >
-                              <img src={arrowRight} alt="arrow" />
+                              <img
+                              
+                              src={arrowRight} alt="arrow" />
 
                               <motion.div
+                                      onClick={(e)=> e.stopPropagation()}
+
                                 whileTap={{
                                   rotateZ: 16,
                                   transition: { duration: 0.2 },
                                 }}
                               >
                                 <FormControlLabel
+                                
                                   label={areas.area}
                                   control={
                                     <Checkbox
-
                                       onChange={()=> handleAreaClick(item.id, city.city_id, areas)}
                                       name={city.city.name}
                                       index={index}
@@ -360,12 +383,13 @@ console.log('city event checked ', cityEventChecked)
                           </div>
                         );
                       })}
-                    </div>
+                      </Box>
+                    </motion.div>
                   );
                 })}
               </div>
             </motion.div>
-          </div>
+          </motion.div>
 
 
 
