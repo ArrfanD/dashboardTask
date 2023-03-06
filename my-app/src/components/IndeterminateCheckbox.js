@@ -60,14 +60,14 @@ export default function IndeterminateCheckbox() {
     let checkIsZonePresent = dataToBeSet?.map(arr => arr.filter(item => item.zone === sentObj[0].zone)).filter(item => item.length > 0)
     // console.log('check is zone present ',checkIsZonePresent.length)
 
-    console.log('end result of the', dataToBeSet)
-    console.log('end result of the required onject', checkIsZonePresent.length)
+
+
     if (checkIsZonePresent.length > 1) {
       let removeTheCheckedZoneData = dataToBeSet?.map(arr => arr.filter(item => item.zone !== sentObj[0].zone)).filter(item => item.length > 0)
       console.log('data after removing the double checked zone checkbox', removeTheCheckedZoneData)
       setClickedCheckbox(removeTheCheckedZoneData)
     } else if (checkIsZonePresent.length === 0) {
-      console.log('just tesdt')
+      
       workArr.push(sentObj)
       setClickedCheckbox(workArr)
     }
@@ -79,24 +79,18 @@ export default function IndeterminateCheckbox() {
     let processed = itemObj.advertisers.map(item => item.area.map(data => {
       return { zone: itemObj.id, city: item.city_id, areaName: data.area }
     })).reduce((acc, arr) => acc.concat(arr), []);
-    // console.log(' processed ', processed)
+    
     baseArr.push(processed);
     setClickedCheckbox(baseArr)
     setSelectedCheckboxState(baseArr, processed);
   };
 
-  // let handleCityCheckedState = (cityObject,zoneIdFromButton,eventObj) => {
-  //   console.log('city event object', eventObj.target.checked)
-  //   // arrangement to maintain city checkbox checked state, which will be used to influence the zone checked state.
-  //   setCityEventChecked([{zone: zoneIdFromButton, city: cityObject.city_id, checked: eventObj.target.checked}])
-  // }
 
   let handleCityClick = (cityObj, zoneIdFromBtn, event) => {
 
-    // console.log('cite btn pressed')
+    
     let baseArr = [...clickedCheckbox];
-    // console.log('check city presence zones', zoneIdFromBtn,cityObj.city_id )
-    // console.log('city data sent from city checkbox',baseArr)
+
     console.log('city data sent from city checkbox processed', cityObj.area.map(item => {
       return { zone: zoneIdFromBtn, city: cityObj.city_id, areaName: item.area }
     }))
@@ -266,10 +260,10 @@ export default function IndeterminateCheckbox() {
                       console.log('check area qty', areaQtyForCurrentCity, resolveAreaQtyForClickedCity?.length, city.city.name)
   
                       if (areaQtyForCurrentCity === resolveAreaQtyForClickedCity?.length){
-                        console.log('this city is clicked')
+                        console.log('this city is clicked', city.city.name)
                         return {zone: zoneIdForCity, city: confirmedCityId[0], outcome: 'checked'}
-                      } else if (areaQtyForCurrentCity !== areaQuantityForClickedCity?.length && areaQuantityForClickedCity?.length > 0) {
-                        console.log('this city was not clicked')
+                      } else if (areaQtyForCurrentCity !== resolveAreaQtyForClickedCity?.length && resolveAreaQtyForClickedCity?.length > 0) {
+                        console.log('this city was not clicked', city.city.name)
                         return {zone: zoneIdForCity, city: confirmedCityId[0], outcome: 'indeterminate'}
                       } else {
                         return false
