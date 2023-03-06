@@ -10,13 +10,13 @@ import { motion } from "framer-motion";
 
 export default function IndeterminateCheckbox() {
   // State for all the functionality defining data
-  const [clickedId, setClickedId] = useState([]);
   const [zoneCityObj, setZoneCityObj] = useState([]);
-  const [zoneIndex, setZoneIndex] = useState([]);
-  const [clickedArea, setClickedArea] = useState([]);
   const [clickedCheckbox, setClickedCheckbox] = useState([]);
+  let [cityEventChecked, setCityEventChecked] = useState([])
 
-
+  // This is a function for taking an array as argument that contains multiple arrays with dupliate objects,
+  // so that all those duplicate objects be eliminated. It also accumulates different arrays with the objects having same "zone" 
+  // property into one single array having all the same "zone" prop objects together.
   function removeDuplicateObjects(array) {
     return array.map((childArray) => {
       const uniqueObjects = [];
@@ -38,8 +38,8 @@ export default function IndeterminateCheckbox() {
     });
   }
   
-  
-  
+  // This funtion accumulates different arrays with the objects having same "zone" 
+  // property into one single array having all the same "zone" prop objects together.
   function groupByZone(arr) {
     const zones = {};
     arr.forEach((subArr) => {
@@ -54,37 +54,6 @@ export default function IndeterminateCheckbox() {
     return Object.values(zones);
   }
   
-
-  function setTheMainState(newZoneAndCity) {
-    let baseArr = [...zoneCityObj];
-    // checking if the newZoneAndCity (Checked Data) is already present in zoneCityObj.
-    if (
-      zoneCityObj.filter(
-        (item) =>
-          item.city === newZoneAndCity[0].city &&
-          item.zone === newZoneAndCity[0].zone &&
-          item.areaName === newZoneAndCity[0].areaName
-      ).length
-    ) {
-      // basically, if newZoneAndCity (Checked Data) is already present, remove it from baseArr. (since its unchecked)
-      let filtered = baseArr.filter((item) => {
-        return (
-          item.city !== newZoneAndCity[0].city ||
-          item.zone !== newZoneAndCity[0].zone ||
-          item.areaName !== newZoneAndCity[0].areaName
-        );
-      });
-      setZoneCityObj(filtered);
-    } else {
-      // at this stage, newZoneAndCity (Checked Data) is not present, hence add it to baseArr.
-      baseArr.push(...newZoneAndCity);
-      // update the "zoneCityObj" with the newly checked data.
-      setZoneCityObj(baseArr);
-    }
-  }
-
-
-
   let setSelectedCheckboxState = (dataToBeSet, sentObj) => {
     let workArr = [...clickedCheckbox]
 
@@ -116,7 +85,14 @@ export default function IndeterminateCheckbox() {
     setSelectedCheckboxState(baseArr, processed);
   };
 
-  let handleCityClick = (cityObj,zoneIdFromBtn) => {
+  // let handleCityCheckedState = (cityObject,zoneIdFromButton,eventObj) => {
+  //   console.log('city event object', eventObj.target.checked)
+  //   // arrangement to maintain city checkbox checked state, which will be used to influence the zone checked state.
+  //   setCityEventChecked([{zone: zoneIdFromButton, city: cityObject.city_id, checked: eventObj.target.checked}])
+  // }
+
+  let handleCityClick = (cityObj,zoneIdFromBtn,event) => {
+
     // console.log('cite btn pressed')
     let baseArr = [...clickedCheckbox];
     // console.log('check city presence zones', zoneIdFromBtn,cityObj.city_id )
@@ -194,7 +170,7 @@ export default function IndeterminateCheckbox() {
   }
 
 console.log('done area log state', clickedCheckbox)
-
+console.log('city event checked ', cityEventChecked)
   return (
     <Row className="justify-content-evenly w-100 container-fluid">
       {data.map((item) => {
@@ -202,15 +178,40 @@ console.log('done area log state', clickedCheckbox)
         let zoneState = (itemId,itemArr) => {
           let baseArr = [...clickedCheckbox]
           let sortForZone = baseArr?.map(item => item?.filter(data => data.zone === itemArr.id))?.filter(item => item?.length > 0)
+          
           let checkedZoneCities = new Set(sortForZone[0]?.map(item => item.city))
+          let requiredAreas = []
+          let actualCheckedAreas = []
+          let resolvedBaseArray = [...baseArr]
+          let finalResolvedArray = removeDuplicateObjects(resolvedBaseArray)
+          let checkedZones = new Set(sortForZone[0]?.map(item => item))
+
+          const requiredZoneAreaQty = itemArr?.advertisers?.map(item => item.area)?.forEach(item => item?.forEach( y => requiredAreas.push(y.area)))
+          
+          let actualZoneAreaQty = finalResolvedArray?.map(item => item).map(data => data.filter(itm => itm.zone === itemId)).filter(x => x.length > 0)[0]?.map(item => actualCheckedAreas.push(item.areaName))
+
+          console.log('zone data [required]', requiredAreas.length)
+          console.log('zone data [actual]', actualCheckedAreas.length)
+
           const checkedZoneCitiesQty = Array.from(checkedZoneCities).length
+          const checkedZoneCitiesArr = Array.from(checkedZoneCities)
+
+          /// new work
+          let checkCityQty = finalResolvedArray?.map(item => item?.filter(data => data.zone === itemArr.id))?.filter(item => item?.length > 0)[0]?.length
+          let requireCityQty = itemArr.advertisers.map(item => item.area.length).reduce((acc,val)=> acc += val, 0)
+          // new work
+
+          // console.log('zone data checkedZoneCities', checkedZoneCitiesArr,checkedZones,baseArr)
+          // console.log('zone data checkedZoneCities', finalResolvedArray?.map(item => item?.filter(data => data.zone === itemArr.id))?.filter(item => item?.length > 0)[0]?.length, itemArr.advertisers.map(item => item.area.length).reduce((acc,val)=> acc += val, 0))
+          console.log('zone data checkedZoneCities', checkCityQty,requireCityQty)
+
           const actualCityQtyForZone = itemArr?.advertisers?.map(item => item.city_id).length
           const checkedZoneId = itemId
           // console.log('observe here sds ',checkedZoneCitiesQty )
-          if (actualCityQtyForZone === checkedZoneCitiesQty){
+          if (actualCityQtyForZone === checkedZoneCitiesQty && requiredAreas.length === actualCheckedAreas.length){
             console.log(`checked zone no `,checkedZoneId )
             return {outcome: 'checked', zone: checkedZoneId}
-          } else if (actualCityQtyForZone !== checkedZoneCitiesQty && checkedZoneCitiesQty > 0){
+          } else if (requiredAreas.length !== actualCheckedAreas.length  && actualCheckedAreas.length > 0 && requireCityQty > checkCityQty){
             console.log(`indeterminate zone no `, checkedZoneId)
             return {outcome: 'indeterminate', zone: checkedZoneId}
           } else {
@@ -220,7 +221,11 @@ console.log('done area log state', clickedCheckbox)
 
         return (
           <>
-            <FormControlLabel
+          <div
+              className="flex-col justify-content-start bg-light mx-2 mb-5 card rounded-4 col-lg-3"
+              
+          >
+                                  <FormControlLabel
               label={item.name}
               control={
                 <Checkbox
@@ -233,14 +238,14 @@ console.log('done area log state', clickedCheckbox)
                 />
               }
             />
-            <motion.div
+                      <motion.div
               whileHover={{
                 scale: 0.95,
                 transition: { duration: 0.2 },
               }}
-              className="flex-col justify-content-start bg-light mx-2 mb-5 card rounded-4 col-lg-3"
+              className="flex-col justify-content-start  mx-2 mb-5  col-lg-3"
             >
-              <label className="col-lg-6 mt-2 col-md-6">{item.name}</label>
+              {/* <label className="col-lg-6 mt-2 col-md-6">{item.name}</label> */}
               <div className="col-lg-6 flex-col justify-content-evenly col-md-8  m-3">
                 {item.advertisers.map((city, indexCity) => {
                   let city_id = city.city_id;
@@ -278,8 +283,8 @@ console.log('done area log state', clickedCheckbox)
                             checked={setCityState(city, item.id).outcome === 'checked' && setCityState(city, item.id).zone === item.id && setCityState(city, item.id).city === city.city_id}
                             indeterminate={setCityState(city, item.id).outcome === 'indeterminate' && setCityState(city, item.id).zone === item.id && setCityState(city, item.id).city === city.city_id}
                             name={city.city.name}
-                        onChange={()=>handleCityClick(city,item.id)}
-
+                        // onChange={(e)=>handleCityCheckedState(city,item.id,e)}
+                          onClick={(e)=>handleCityClick(city,item.id,e)}
                           />
                         }
                       />
@@ -360,6 +365,10 @@ console.log('done area log state', clickedCheckbox)
                 })}
               </div>
             </motion.div>
+          </div>
+
+
+
           </>
         );
       })}
