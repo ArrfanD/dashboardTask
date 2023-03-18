@@ -5,7 +5,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { data } from "../Assets/data";
 import { useState } from "react";
 import Row from "react-bootstrap/esm/Row";
-import arrowRightLine from "../Assets/icons/arrow-right-s-line.svg"
+import arrowRightLine from "../Assets/icons/arrow-right-s-line.svg";
 import { motion } from "framer-motion";
 
 export default function IndeterminateCheckbox() {
